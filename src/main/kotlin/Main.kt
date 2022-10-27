@@ -1,89 +1,81 @@
-import java.net.InterfaceAddress
 import java.util.*
 
 fun main(args: Array<String>) {
-    var lenin: Anciano = Enano("Stalin")
+    var lenin = Enano("Stalin", Estado_vital.ANCIANO)
     lenin.pregunta("¿AAAAAAAAA?")
 }
 
-open class Persona(var nombre: String) : Anciano, Adulto, Joven {
-    override fun idioma(respuesta: String) {
+open class Persona(
+    var nombre: String,
+    var edad: Estado_vital,
+    var partidas_jugadas: Int = 0,
+    var horas: Int = 0,
+    var kills: Int = 0,
+    var deaths: Int = 0,
+    var assists: Int = 0,
+    var kd: Float = kills.toFloat() / deaths.toFloat()
+) : Clases {
+    open fun idioma(respuesta: String) {
     }
 
-    override fun pregunta(pregunta: String) {
+    fun pregunta(pregunta: String) {
         var respuesta = ""
-        if (test() == "Viejo") respuesta = respuestasViejo(pregunta)
-        else if (test() == "Adulto") respuesta = respuestasAdulto(pregunta)
-        else if (test() == "Anciano") respuesta = respuestasJoven(pregunta)
+        respuesta = respuestasGen(pregunta)
         idioma(respuesta)
     }
 
-    override fun respuestasViejo(pregunta: String): String {
-        var cont = 0
-        for (c in pregunta.toCharArray()) {
-            if (c == '¿' || c == '?') cont += 2
-            else if (c.isUpperCase()) cont++
+    fun respuestasGen(pregunta: String): String {
+        if (pregunta == "¿Como estás?") {
+            return when (this.edad) {
+                Estado_vital.ANCIANO -> "No me puedo mover"
+                Estado_vital.ADULTO -> "En la flor de la vida, pero me empieza a doler la espalda"
+                Estado_vital.JOVEN -> "De lujo"
+            }
+        } else if (pregunta == pregunta.uppercase() && pregunta.contains("¿") && pregunta.contains("?")) {
+            return when (this.edad) {
+                Estado_vital.ANCIANO -> "Que no te escucho!"
+                Estado_vital.ADULTO -> "Estoy buscando la mejor solución"
+                Estado_vital.JOVEN -> "Tranqui se lo que hago"
+            }
+        } else if (pregunta == pregunta.uppercase()) {
+            return when (this.edad) {
+                Estado_vital.ANCIANO -> "Háblame más alto que no te escucho"
+                Estado_vital.ADULTO -> "No me levantes la voz mequetrefe"
+                Estado_vital.JOVEN -> "Eh relájate"
+            }
+        } else if (pregunta == nombre) {
+            return when (this.edad) {
+                Estado_vital.ANCIANO -> "Las 5 de la tarde"
+                Estado_vital.ADULTO -> "¿Necesitas algo?"
+                Estado_vital.JOVEN -> "¿Qué pasa?"
+            }
+        } else return when (this.edad) {
+            Estado_vital.ANCIANO -> "En mis tiempos esto no pasaba"
+            Estado_vital.ADULTO -> "No sé de qué me estás hablando"
+            Estado_vital.JOVEN -> "Yo que se"
         }
-
-        return if (pregunta == "¿Como estás?") "No me puedo mover"
-        else if (cont == pregunta.length) "Háblame más alto que no te escucho"
-        else if (cont == pregunta.length + 2) "Que no te escucho!"
-        else if (pregunta == nombre) "Las 5 de la tarde"
-        else "En mis tiempos esto no pasaba"
-    }
-
-    override fun respuestasAdulto(pregunta: String): String {
-        var cont = 0
-        for (c in pregunta.toCharArray()) {
-            if (c.equals('¿') || c.equals('?')) cont += 2
-            else if (c.isUpperCase()) cont++
-        }
-
-        return if (pregunta == "¿Como estás?") "En la flor de la vida, pero me empieza a doler la espalda"
-        else if (cont == pregunta.length) "No me levantes la voz mequetrefe"
-        else if (cont == pregunta.length + 2) "Estoy buscando la mejor solución"
-        else if (pregunta.equals(nombre)) "¿Necesitas algo?"
-        else "No sé de qué me estás hablando"
-    }
-
-    override fun test(): String {
-        return "adsdasdasd"
-    }
-
-    override fun respuestasJoven(pregunta: String): String {
-        var cont = 0
-        for (c in pregunta.toCharArray()) {
-            if (c == '¿' || c == '?') cont += 2
-            else if (c.isUpperCase()) cont++
-        }
-
-        return if (pregunta == "¿Como estás?") "De lujo"
-        else if (cont == pregunta.length) "Eh relájate"
-        else if (cont == pregunta.length + 2) "Tranqui se lo que hago"
-        else if (pregunta.equals(nombre)) "¿Qué pasa?"
-        else "Yo que se"
     }
 }
 
-class Elfo(nombre: String) : Persona(nombre) {
+class Elfo(nombre: String, edad: Estado_vital) : Persona(nombre, edad) {
     override fun idioma(respuesta: String) {
         println(respuesta.rot13cifrado(13))
     }
 }
 
-class Goblin(nombre: String) : Persona(nombre) {
+class Goblin(nombre: String, edad: Estado_vital) : Persona(nombre, edad) {
     override fun idioma(respuesta: String) {
         println(respuesta.rot13cifrado(13))
     }
 }
 
-class Enano(nombre: String) : Persona(nombre) {
+class Enano(nombre: String, edad: Estado_vital) : Persona(nombre, edad) {
     override fun idioma(respuesta: String) {
         println(respuesta.uppercase(Locale.getDefault()))
     }
 }
 
-class Humano(nombre: String) : Persona(nombre) {
+class Humano(nombre: String, edad: Estado_vital) : Persona(nombre, edad) {
     override fun idioma(respuesta: String) {
         println(respuesta)
     }
@@ -113,33 +105,14 @@ enum class Clase {
     GUERRERO, MAGO, LADRON, BERSERKER
 }
 
-enum class Raza {
-    ELFO, HUMANO, ENANO, GOBLIN
-}
+interface Clases : Berserker, Mago, Ladron, Guerrero, Mercader
 
+interface Berserker
 
-interface RespuestasRazas {
-    fun idioma(respuesta: String)
-    fun pregunta(pregunta: String)
-}
+interface Mago
 
-interface Anciano : RespuestasRazas {
-    fun respuestasViejo(pregunta: String): String
-    fun test(): String {
-        return "Viejo"
-    }
-}//ayayayaya luego llamo al metodo ese y ya lo puedo reconocer. Si y aun así lo puedes sobreescribir
+interface Ladron
 
-interface Adulto : RespuestasRazas {
-    fun respuestasAdulto(pregunta: String): String
-    fun test(): String {
-        return "Adulto"
-    }
-}
+interface Guerrero
 
-interface Joven : RespuestasRazas {
-    fun respuestasJoven(pregunta: String): String
-    fun test(): String {
-        return "Joven"
-    }
-}
+interface Mercader
