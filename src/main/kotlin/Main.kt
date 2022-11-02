@@ -1,21 +1,28 @@
 import java.util.*
 
 fun main(args: Array<String>) {
-    var lenin = Enano("Stalin", Estado_vital.ANCIANO)
+    var lenin = Mago("Stalin", Estado_vital.ANCIANO, Raza.ENANO)
     lenin.pregunta("¿AAAAAAAAA?")
 }
 
 open class Persona(
     var nombre: String,
     var edad: Estado_vital,
+    var raza: Raza,
     var partidas_jugadas: Int = 0,
     var horas: Int = 0,
     var kills: Int = 0,
     var deaths: Int = 0,
     var assists: Int = 0,
     var kd: Float = kills.toFloat() / deaths.toFloat()
-) : Clases {
+) {
     open fun idioma(respuesta: String) {
+        when (this.raza) {
+            Raza.GOBLIN -> println(respuesta.rot13cifrado(13))
+            Raza.ELFO -> println(respuesta.rot13cifrado(13))
+            Raza.ENANO -> println(respuesta.uppercase(Locale.getDefault()))
+            Raza.HUMANO -> println(respuesta)
+        }
     }
 
     fun pregunta(pregunta: String) {
@@ -57,27 +64,21 @@ open class Persona(
     }
 }
 
-class Elfo(nombre: String, edad: Estado_vital) : Persona(nombre, edad) {
-    override fun idioma(respuesta: String) {
-        println(respuesta.rot13cifrado(13))
-    }
-}
+class Mago(nombre: String, edad: Estado_vital, raza: Raza) : Persona(nombre, edad, raza)
 
-class Goblin(nombre: String, edad: Estado_vital) : Persona(nombre, edad) {
-    override fun idioma(respuesta: String) {
-        println(respuesta.rot13cifrado(13))
-    }
-}
+class Berserker(nombre: String, edad: Estado_vital, raza: Raza) : Persona(nombre, edad, raza)
 
-class Enano(nombre: String, edad: Estado_vital) : Persona(nombre, edad) {
-    override fun idioma(respuesta: String) {
-        println(respuesta.uppercase(Locale.getDefault()))
-    }
-}
+class Ladron(nombre: String, edad: Estado_vital, raza: Raza) : Persona(nombre, edad, raza)
 
-class Humano(nombre: String, edad: Estado_vital) : Persona(nombre, edad) {
-    override fun idioma(respuesta: String) {
-        println(respuesta)
+class Guerrero(nombre: String, edad: Estado_vital, raza: Raza) : Persona(nombre, edad, raza)
+
+class Mercader(nombre: String, edad: Estado_vital, raza: Raza) : Persona(nombre, edad, raza) {
+    fun venta() {
+
+    }
+
+    fun compra() {
+
     }
 }
 
@@ -101,18 +102,6 @@ enum class Estado_vital {
     ANCIANO, ADULTO, JOVEN
 }
 
-enum class Clase {
-    GUERRERO, MAGO, LADRON, BERSERKER
+enum class Raza {
+    ELFO, ENANO, HUMANO, GOBLIN
 }
-
-interface Clases : Berserker, Mago, Ladron, Guerrero, Mercader
-
-interface Berserker
-
-interface Mago
-
-interface Ladron
-
-interface Guerrero
-
-interface Mercader
